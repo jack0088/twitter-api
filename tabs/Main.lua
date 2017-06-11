@@ -1,19 +1,21 @@
 -- Twitter API
+-- Depends on https://github.com/somesocks/lua-lockbox
+
 
 -- Application specific
 -- generated and obtained from https://apps.twitter.com
 local app_consumer_key = "dVJWptRAumKSM5r9DY2zoL9No"
 local app_consumer_secret = "27hxObUkFS5Yqu0zO4uHx1Gjh4zh2LJbKEDJQ457kx3r9Fpzz7"
 -- this access token can be used to make api requests on your own accounts behalf
-local app_access_token = "345353224-FBfGkasjnr8XoOf5ixFJ9JCAik41wbK0wNIumKy3"
-local app_access_token_secret = "bEKBzwyRG9ihoawZSAbRZtZmAoMOFrzT57widNVAgqbHs"
+local app_access_token = "345353224-iixJTqNLWlZFMsQif6kisDuPKIno9so2fmZYTAqN"
+local app_access_token_secret = "gUelacqps4NVe0CPH5fUrudZq5yc8aMLO4j6mzEcNJLMM"
 
 
 local DROPBOX = os.getenv("HOME").."/Documents/Dropbox.assets"
 package.path = package.path..";"..DROPBOX.."/?.lua"
 
-local array_string = require("lockbox.util.array").fromString
-local stream_string = require("lockbox.util.stream").fromString
+local array_encode = require("lockbox.util.array").fromString
+local stream_encode = require("lockbox.util.stream").fromString
 local base_64_encode = require("lockbox.util.base64").fromArray
 local hmac = require "lockbox.mac.hmac"
 local sha1 = require "lockbox.digest.sha1"
@@ -21,7 +23,6 @@ local sha1 = require "lockbox.digest.sha1"
 
 local function rfc_3986_encode(src)
     if not src then return "" end
-    --return tostring(src:gsub("[^-._~%w]", function(char)
     return tostring(src:gsub("[^-._~%w]", function(char)
         return string.format('%%%02X', char:byte()):upper()
     end))
@@ -65,13 +66,12 @@ local function encode_signature(signature, consumer_secret, access_token_secret)
         hmac()
         .setBlockSize(64)
         .setDigest(sha1)
-        .setKey(array_string(sign_key))
+        .setKey(array_encode(sign_key))
         .init()
-        .update(stream_string(signature))
+        .update(stream_encode(signature))
         .finish()
         .asBytes()
     )
-    --return tostring(base_64_encode(sha1.hmac_binary(sign_key, signature)))
 end
 
 
@@ -90,7 +90,8 @@ end
 
 
 local function report_request_success(response, status, headers)
-    print(status, headers)
+    print(status, type(headers))
+    pretty(headers)
     print(data)
 end
 
@@ -103,22 +104,23 @@ end
 local function make_api_request(method, url, parameters)
     parameters.oauth_version = "1.0"
     parameters.oauth_nonce = generate_random_string(32)
-    parameters.oauth_timestamp = os.time()
+    parameters.oauth_timestamp = os.time() + 1
     parameters.oauth_consumer_key = app_consumer_key
     parameters.oauth_token = app_access_token
     parameters.oauth_signature_method = "HMAC-SHA1"
     parameters.oauth_signature = encode_signature(build_signature(method, url, parameters), app_consumer_secret, app_access_token_secret)
+    print(parameters.oauth_signature)
     
     http.request(url, report_request_success, report_request_failure, {
         --useagent = "OAuth gem v0.4.4",
         method = method:upper(),
         headers = {
             --["Accept"] = "*/*",
-            --["Connection"] = "close",
+            ["Connection"] = "close http header",
+            --["Host"] = "api.twitter.com",
             --["User-Agent"] = "OAuth gem v0.4.4",
             --["Content-Type"] = "application/x-www-form-urlencoded",
             ["Authorization"] = build_authorization_header(parameters),
-            --["Host"] = "api.twitter.com",
             --["Content-Length"] = "76",
             --["status"] = "hello world, this is a test"
         }
@@ -127,21 +129,11 @@ end
 
 
 function setup()
-    make_api_request("GET", "https://api.twitter.com/1.1/account/verify_credentials.json", {})
-    
-    --[[
-    local sig = build_signature("POST", "https://api.twitter.com/1/statuses/update.json", {
-        status = "Hello Ladies + Gentlemen, a signed OAuth request!",
-        include_entities = true,
-        oauth_consumer_key = "xvz1evFS4wEEPTGEFPHBog",
-        oauth_nonce = "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
-        oauth_signature_method = "HMAC-SHA1",
-        oauth_timestamp = 1318622958,
-        oauth_token = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
-        oauth_version = "1.0"
-    })
-    print(encode_signature(sig, "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw", "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"))
-    --]]
+    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/home_timeline.json", {})
+    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/home_timeline.json", {})
+    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", {})
+    --make_api_request("GET", "https://api.twitter.com/1.1/followers/list.json", {})
+    make_api_request("GET", "https://api.twitter.com/1.1/statuses/retweets_of_me.json", {})
 end
 
 
