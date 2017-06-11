@@ -8,6 +8,7 @@ local app_consumer_secret = "27hxObUkFS5Yqu0zO4uHx1Gjh4zh2LJbKEDJQ457kx3r9Fpzz7"
 local app_access_token = "345353224-FBfGkasjnr8XoOf5ixFJ9JCAik41wbK0wNIumKy3"
 local app_access_token_secret = "bEKBzwyRG9ihoawZSAbRZtZmAoMOFrzT57widNVAgqbHs"
 
+
 local DROPBOX = os.getenv("HOME").."/Documents/Dropbox.assets"
 package.path = package.path..";"..DROPBOX.."/?.lua"
 
@@ -17,9 +18,11 @@ local base_64_encode = require("lockbox.util.base64").fromArray
 local hmac = require "lockbox.mac.hmac"
 local sha1 = require "lockbox.digest.sha1"
 
+
 local function rfc_3986_encode(src)
     if not src then return "" end
-    return tostring(src:gsub("[^-._~%w]", function(char) -- unreserved with slashes
+    --return tostring(src:gsub("[^-._~%w]", function(char)
+    return tostring(src:gsub("[^-._~%w]", function(char)
         return string.format('%%%02X', char:byte()):upper()
     end))
 end
@@ -68,6 +71,7 @@ local function encode_signature(signature, consumer_secret, access_token_secret)
         .finish()
         .asBytes()
     )
+    --return tostring(base_64_encode(sha1.hmac_binary(sign_key, signature)))
 end
 
 
@@ -86,6 +90,7 @@ end
 
 
 local function report_request_success(response, status, headers)
+    print(status, headers)
     print(data)
 end
 
@@ -122,10 +127,10 @@ end
 
 
 function setup()
-    --make_api_request("GET", "https://api.twitter.com/1.1/account/verify_credentials.json", {})
+    make_api_request("GET", "https://api.twitter.com/1.1/account/verify_credentials.json", {})
     
-    ---[[
-    local sig = build_signature("POST", "https://api.twitter.com/1.1/statuses/update.json", {
+    --[[
+    local sig = build_signature("POST", "https://api.twitter.com/1/statuses/update.json", {
         status = "Hello Ladies + Gentlemen, a signed OAuth request!",
         include_entities = true,
         oauth_consumer_key = "xvz1evFS4wEEPTGEFPHBog",
@@ -135,11 +140,7 @@ function setup()
         oauth_token = "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
         oauth_version = "1.0"
     })
-    local enc = encode_signature("POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json&include_entities%3Dtrue%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1318622958%26oauth_token%3D370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb%26oauth_version%3D1.0%26status%3DHello%2520Ladies%2520%252B%2520Gentlemen%252C%2520a%2520signed%2520OAuth%2520request%2521",
-        "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw",
-        "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"
-    )
-    print(enc)
+    print(encode_signature(sig, "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw", "LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"))
     --]]
 end
 
