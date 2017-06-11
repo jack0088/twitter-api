@@ -92,7 +92,8 @@ end
 local function report_request_success(response, status, headers)
     print(status, type(headers))
     pretty(headers)
-    print(data)
+    --(json.decode(response))
+    print(response)
 end
 
 
@@ -109,14 +110,12 @@ local function make_api_request(method, url, parameters)
     parameters.oauth_token = app_access_token
     parameters.oauth_signature_method = "HMAC-SHA1"
     parameters.oauth_signature = encode_signature(build_signature(method, url, parameters), app_consumer_secret, app_access_token_secret)
-    print(parameters.oauth_signature)
     
     http.request(url, report_request_success, report_request_failure, {
-        --useagent = "OAuth gem v0.4.4",
         method = method:upper(),
         headers = {
             --["Accept"] = "*/*",
-            ["Connection"] = "close http header",
+            --["Connection"] = "close http header",
             --["Host"] = "api.twitter.com",
             --["User-Agent"] = "OAuth gem v0.4.4",
             --["Content-Type"] = "application/x-www-form-urlencoded",
@@ -130,10 +129,10 @@ end
 
 function setup()
     --make_api_request("GET", "https://api.twitter.com/1.1/statuses/home_timeline.json", {})
-    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/home_timeline.json", {})
-    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", {})
+    make_api_request("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", {})
     --make_api_request("GET", "https://api.twitter.com/1.1/followers/list.json", {})
-    make_api_request("GET", "https://api.twitter.com/1.1/statuses/retweets_of_me.json", {})
+    --make_api_request("GET", "https://api.twitter.com/1.1/statuses/retweets_of_me.json", {})
+    --make_api_request("GET", "https://api.twitter.com/1.1/favorites/list.json", {})
 end
 
 
