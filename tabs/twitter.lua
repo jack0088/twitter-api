@@ -5,8 +5,8 @@
 
 -- Each application musst have an identifier
 -- generate yours at https://apps.twitter.com
-local app_consumer_key = "dVJWptRAumKSM5r9DY2zoL9No"
-local app_consumer_secret = "27hxObUkFS5Yqu0zO4uHx1Gjh4zh2LJbKEDJQ457kx3r9Fpzz7"
+local app_consumer_key = ""
+local app_consumer_secret = ""
 
 -- An access_token can be used to make api requests on behalf of a user account
 -- by default ANY user is allowed to connect to this application
