@@ -7,6 +7,7 @@
 	<key>Buffer Order</key>
 	<array>
 		<string>Main</string>
+		<string>twitter</string>
 	</array>
 	<key>Dependencies</key>
 	<array>
