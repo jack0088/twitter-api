@@ -6,7 +6,8 @@ function setup()
     --request_api("GET", "https://api.twitter.com/1.1/statuses/retweets_of_me.json", {})
     --request_api("GET", "https://api.twitter.com/1.1/favorites/list.json", {})
     
-    twitter.request_api("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", {count = 1})
+    twitter.request("GET", "https://api.twitter.com/1.1/statuses/retweets_of_me.json", nil, function(data) print("\n\n----------\n\n") print(data) end)
+    twitter.request("GET", "https://api.twitter.com/1.1/statuses/user_timeline.json", {count = 1}, function(data) print("\n\n----------\n\n") print(data) end)
 end
 
 
