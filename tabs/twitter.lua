@@ -214,8 +214,4 @@ end
 twitter = {}
 twitter.check = check_access
 twitter.authenticate = request_access
-twitter.request = function(...)
-    local params = {...}
-    local callback = function() request_api(unpack(params)) end
-    check_access(callback)
-end
+twitter.request = request_api

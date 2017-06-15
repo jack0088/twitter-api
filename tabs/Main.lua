@@ -10,7 +10,7 @@ end
 
 function draw()
     background(120, 126, 138, 255)
-    fill(34, 57, 51, 255)
+    fill(31, 37, 33, 255)
     textWrapWidth(WIDTH)
     textMode(CENTER)
     textAlign(CENTER)
