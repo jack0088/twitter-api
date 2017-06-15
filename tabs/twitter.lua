@@ -40,7 +40,7 @@ local function generate_random_string(length)
 end
 
 
-local function printf(t, indent)
+function printf(t, indent)
     if not indent then indent = "" end
     local names = {}
     for n, g in pairs(t) do
